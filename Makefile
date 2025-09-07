@@ -40,7 +40,9 @@ clean: tidy
 	find src/gfx \
 	     \( -iname '*.1bpp' \
 	        -o -iname '*.2bpp' \
-	        -o -iname '*.pal' \) \
+	        -o -iname '*.pal'  \
+	        -o -iname '*.attrmap'  \
+	        -o -iname '*.cardattr' \) \
 	     -delete
 
 tidy:
@@ -99,6 +101,8 @@ $(rom): $(rom_obj) src/layout.link
 
 ### Misc file-specific graphics rules
 
+src/gfx/cards/%.2bpp: rgbgfx += -Z -P -A
+
 src/gfx/coins/%.2bpp: rgbgfx += -x 1
 
 src/gfx/booster_packs/beginning_pack.2bpp: rgbgfx += -x 2
@@ -119,6 +123,7 @@ src/gfx/link/link_scene.2bpp: rgbgfx += -x 7
 %.png: ;
 
 %.pal: ;
+%.attrmap: ;
 
 %.2bpp: %.png
 	$(RGBGFX) $(rgbgfx) -o $@ $<
@@ -129,3 +134,6 @@ src/gfx/link/link_scene.2bpp: rgbgfx += -x 7
 	$(RGBGFX) $(rgbgfx) -d1 -o $@ $<
 	$(if $(tools/gfx),\
 		tools/gfx $(tools/gfx) -d1 -o $@ $@)
+
+%.cardattr: %.attrmap
+	tools/card_attributes $(tools/card_attributes) -o $@ $<
